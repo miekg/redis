@@ -15,7 +15,7 @@ func ToString(m *dns.Msg) string {
 
 func FromString(s string) *dns.Msg {
 	m := new(dns.Msg)
-	b := base64.RawStdEncoding.DecodeString(s)
+	b, _ := base64.RawStdEncoding.DecodeString(s)
 	m.Unpack(b)
 	return m
 }
