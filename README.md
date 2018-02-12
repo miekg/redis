@@ -36,7 +36,7 @@ If you want more control:
 
 ~~~ txt
 redis [TTL] [ZONES...] {
-    endpoint ENDPOINT...
+    endpoint ENDPOINT
     success TTL
     denial TTL
 }
@@ -44,20 +44,16 @@ redis [TTL] [ZONES...] {
 
 * **TTL**  and **ZONES** as above.
 * `endpoint` specifies which **ENDPOINT** to use for Redis, this default to `localhost:6379`.
-* `success`, override the settings for caching successful responses. **CAPACITY** indicates the maximum
-  number of packets we cache before we start evicting (*randomly*). **TTL** overrides the cache maximum TTL.
-* `denial`, override the settings for caching denial of existence responses. **CAPACITY** indicates the maximum
-  number of packets we cache before we start evicting (LRU). **TTL** overrides the cache maximum TTL.
+* `success`, override the settings for caching successful responses. **TTL** overrides the cache maximum TTL.
+* `denial`, override the settings for caching denial of existence responses. **TTL** overrides the cache maximum TTL.
   There is a third category (`error`) but those responses are never cached.
 
 ## Metrics
 
 If monitoring is enabled (via the *prometheus* directive) then the following metrics are exported:
 
-* `coredns_redis_hits_total{type}` - Counter of cache hits by cache type.
+* `coredns_redis_hits_total{}` - Counter of cache hits by cache type.
 * `coredns_redis_misses_total{}` - Counter of cache misses.
-
-Cache types are either "denial" or "success".
 
 ## Examples
 

@@ -25,6 +25,8 @@ func setup(c *caddy.Controller) error {
 	if err != nil {
 		return plugin.Error("redis", err)
 	}
+	re.connect()
+
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
 		re.Next = next
 		return re
@@ -43,10 +45,6 @@ func setup(c *caddy.Controller) error {
 		})
 		return nil
 	})
-
-	// Initialize all counters and gauges.
-	cacheHits.WithLabelValues(Success)
-	cacheHits.WithLabelValues(Denial)
 
 	return nil
 }
@@ -80,49 +78,36 @@ func parse(c *caddy.Controller) (*Redis, error) {
 		// Refinements? In an extra block.
 		for c.NextBlock() {
 			switch c.Val() {
-			// first number is cap, second is an new ttl
 			case Success:
 				args := c.RemainingArgs()
-				if len(args) == 0 {
+				if len(args) != 1 {
 					return nil, c.ArgErr()
 				}
-				pcap, err := strconv.Atoi(args[0])
+				pttl, err := strconv.Atoi(args[1])
 				if err != nil {
 					return nil, err
 				}
-				re.pcap = pcap
-				if len(args) > 1 {
-					pttl, err := strconv.Atoi(args[1])
-					if err != nil {
-						return nil, err
-					}
-					// Reserve 0 (and smaller for future things)
-					if pttl <= 0 {
-						return nil, fmt.Errorf("cache TTL can not be zero or negative: %d", pttl)
-					}
-					re.pttl = time.Duration(pttl) * time.Second
+				// Reserve 0 (and smaller for future things)
+				if pttl <= 0 {
+					return nil, fmt.Errorf("cache TTL can not be zero or negative: %d", pttl)
 				}
+				re.pttl = time.Duration(pttl) * time.Second
 			case Denial:
 				args := c.RemainingArgs()
-				if len(args) == 0 {
+				if len(args) != 1 {
 					return nil, c.ArgErr()
 				}
-				ncap, err := strconv.Atoi(args[0])
+				nttl, err := strconv.Atoi(args[1])
 				if err != nil {
 					return nil, err
 				}
-				re.ncap = ncap
-				if len(args) > 1 {
-					nttl, err := strconv.Atoi(args[1])
-					if err != nil {
-						return nil, err
-					}
-					// Reserve 0 (and smaller for future things)
-					if nttl <= 0 {
-						return nil, fmt.Errorf("cache TTL can not be zero or negative: %d", nttl)
-					}
-					re.nttl = time.Duration(nttl) * time.Second
+				// Reserve 0 (and smaller for future things)
+				if nttl <= 0 {
+					return nil, fmt.Errorf("cache TTL can not be zero or negative: %d", nttl)
 				}
+				re.nttl = time.Duration(nttl) * time.Second
+			case "endpoint":
+				println("not implemented")
 
 			default:
 				return nil, c.ArgErr()

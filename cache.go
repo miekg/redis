@@ -6,28 +6,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/pkg/response"
 
-	"github.com/mediocregopher/radix.v2/pool"
 	"github.com/miekg/dns"
 )
-
-// Redis is plugin that looks up responses in a cache and caches replies.
-// It has a success and a denial of existence cache.
-type Redis struct {
-	Next  plugin.Handler
-	Zones []string
-
-	ncache *pool.Pool
-	nttl   time.Duration
-
-	pcache *pool.Pool
-	pttl   time.Duration
-
-	// Testing.
-	now func() time.Time
-}
 
 // Return key under which we store the message, -1 will be returned if we don't store the message.
 // Currently we do not cache Truncated, errors, zone transfers or dynamic update messages.
@@ -127,21 +109,21 @@ func (w *ResponseWriter) set(m *dns.Msg, key int, mt response.Type, duration tim
 
 	switch mt {
 	case response.NoError, response.Delegation:
-		Add(w.pcache, key, m, duration)
+		fallthrough
 
 	case response.NameError, response.NoData:
-		Add(w.ncache, key, m, duration)
+		Add(w.pool, key, m, duration)
 
 	case response.OtherError:
 		// don't cache these
 	default:
-		log.Printf("[WARNING] Caching called with unknown typification: %d", mt)
+		log.Printf("[WARNING] Redis called with unknown typification: %d", mt)
 	}
 }
 
 // Write implements the dns.ResponseWriter interface.
 func (w *ResponseWriter) Write(buf []byte) (int, error) {
-	log.Printf("[WARNING] Caching called with Write: not caching reply")
+	log.Printf("[WARNING] Redis called with Write: not caching reply")
 	n, err := w.ResponseWriter.Write(buf)
 	return n, err
 }

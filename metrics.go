@@ -7,12 +7,12 @@ import (
 )
 
 var (
-	cacheHits = prometheus.NewCounterVec(prometheus.CounterOpts{
+	cacheHits = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redis",
 		Name:      "hits_total",
 		Help:      "The count of cache hits.",
-	}, []string{"type"})
+	})
 
 	cacheMisses = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
