@@ -16,8 +16,6 @@ If multiple CoreDNS instances get a cache miss for the same item, they will all 
 information from an upstream and updating the cache, i.e. there is no (extra) coordination between
 those instances.
 
-There are two caches, one for positive and another for negative responses.
-
 ## Syntax
 
 ~~~ txt
@@ -26,11 +24,11 @@ redis [TTL] [ZONES...]
 
 * **TTL** max TTL in seconds. If not specified, the maximum TTL will be used, which is 3600 for
     noerror responses and 1800 for denial of existence ones.
-    Setting a TTL of 300: `cache 300` would cache records up to 300 seconds.
+    Setting a TTL of 300: `redis 300` would cache records up to 300 seconds.
 * **ZONES** zones it should cache for. If empty, the zones from the configuration block are used.
 
-Each element in the cache is cached according to its TTL (with **TTL** as the max). For the negative
-cache, the SOA's MinTTL value is used. A TTL of zero is not allowed.
+Each element in the Redis cache is cached according to its TTL (with **TTL** as the max). For the negative
+cache, the SOA's MinTTL value is used.
 
 If you want more control:
 
@@ -52,7 +50,7 @@ redis [TTL] [ZONES...] {
 
 If monitoring is enabled (via the *prometheus* directive) then the following metrics are exported:
 
-* `coredns_redis_hits_total{}` - Counter of cache hits by cache type.
+* `coredns_redis_hits_total{}` - Counter of cache hits.
 * `coredns_redis_misses_total{}` - Counter of cache misses.
 
 ## Examples
