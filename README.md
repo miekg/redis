@@ -76,4 +76,4 @@ Proxy to Google Public DNS and only cache responses for example.org (or below).
 
 # See Also
 
-See [for more information](https://redis.io) on Redis.
+See [the Redis site for more information](https://redis.io) on Redis.
