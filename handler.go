@@ -23,15 +23,14 @@ func (re *Redis) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 
 	now := re.now().UTC()
 
-	println("getting")
 	m := re.get(now, qname, qtype, do)
 
 	if m == nil {
 		crr := &ResponseWriter{ResponseWriter: w, Redis: re}
 		return plugin.NextOrFailure(re.Name(), re.Next, ctx, crr, r)
 	}
-	println("cache hit")
 
+	m.Id = r.Id // Copy IDs so the client will accept this answer.
 	state.SizeAndDo(m)
 	m, _ = state.Scrub(m)
 	w.WriteMsg(m)

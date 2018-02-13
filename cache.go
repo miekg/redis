@@ -112,7 +112,10 @@ func (w *ResponseWriter) set(m *dns.Msg, key int, mt response.Type, duration tim
 		fallthrough
 
 	case response.NameError, response.NoData:
-		Add(w.pool, key, m, duration)
+		err := Add(w.pool, key, m, duration)
+		if err != nil {
+			log.Printf("[WARNING] Failed to add response to Redis %s", err)
+		}
 
 	case response.OtherError:
 		// don't cache these

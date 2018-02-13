@@ -47,53 +47,45 @@ func Add(p *pool.Pool, key int, m *dns.Msg, duration time.Duration) error {
 	}
 	defer p.Put(conn)
 
-	println("adding", key)
 	resp := conn.Cmd("SETEX", strconv.Itoa(key), duration.Seconds(), ToString(m))
 
 	return resp.Err
 }
 
 func Get(p *pool.Pool, key int) (*dns.Msg, error) {
-	println("GET", strconv.Itoa(key))
 	// GET key
 	conn, err := p.Get()
 	if err != nil {
-		println("no conn", err.Error())
 		return nil, err
 	}
 	defer p.Put(conn)
 
 	resp := conn.Cmd("GET", strconv.Itoa(key))
 	if resp.Err != nil {
-		println("err", resp.Err.Error())
 		return nil, resp.Err
 	}
-	println("GET HERE")
 
 	s, _ := resp.Str()
 	if s == "" {
-		println("string is empty")
 		return nil, errors.New("not found")
 	}
 
 	m := FromString(s)
 
-	println("GET RETURN", s, m.String())
 	return m, nil
 }
 
 func (r *Redis) get(now time.Time, qname string, qtype uint16, do bool) *dns.Msg {
 	k := hash(qname, qtype, do)
 
-	if m, err := Get(r.pool, k); err != nil {
-		println("hit", k)
-		cacheHits.Inc()
-		return m
+	m, err := Get(r.pool, k)
+	if err != nil {
+		cacheMisses.Inc()
+		return nil
 	}
-	println("miss", k)
+	cacheHits.Inc()
+	return m
 
-	cacheMisses.Inc()
-	return nil
 }
 
 func (r *Redis) connect() {
