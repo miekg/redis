@@ -13,9 +13,12 @@ func ToString(m *dns.Msg) string {
 	return base64.RawStdEncoding.EncodeToString(b)
 }
 
-func FromString(s string) *dns.Msg {
+func FromString(s string, ttl int) *dns.Msg {
 	m := new(dns.Msg)
 	b, _ := base64.RawStdEncoding.DecodeString(s)
 	m.Unpack(b)
+
+	msgTTL(m, ttl)
+
 	return m
 }

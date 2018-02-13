@@ -47,7 +47,7 @@ func Add(p *pool.Pool, key int, m *dns.Msg, duration time.Duration) error {
 	}
 	defer p.Put(conn)
 
-	resp := conn.Cmd("SETEX", strconv.Itoa(key), duration.Seconds(), ToString(m))
+	resp := conn.Cmd("SETEX", strconv.Itoa(key), int(duration.Seconds()), ToString(m))
 
 	return resp.Err
 }
@@ -65,12 +65,21 @@ func Get(p *pool.Pool, key int) (*dns.Msg, error) {
 		return nil, resp.Err
 	}
 
+	ttl := 0 // Item just expired, slap 0 TTL on it.
+	respTTL := conn.Cmd("TTL", strconv.Itoa(key))
+	if respTTL.Err == nil {
+		ttl, err = respTTL.Int()
+		if err != nil {
+			ttl = 0
+		}
+	}
+
 	s, _ := resp.Str()
 	if s == "" {
 		return nil, errors.New("not found")
 	}
 
-	m := FromString(s)
+	m := FromString(s, ttl)
 
 	return m, nil
 }
@@ -85,7 +94,6 @@ func (r *Redis) get(now time.Time, qname string, qtype uint16, do bool) *dns.Msg
 	}
 	cacheHits.Inc()
 	return m
-
 }
 
 func (r *Redis) connect() {
