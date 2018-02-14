@@ -30,7 +30,7 @@ type Redis struct {
 func New() *Redis {
 	return &Redis{
 		Zones: []string{"."},
-		addr:  "localhost:6379",
+		addr:  "127.0.0.1:6379",
 		idle:  10,
 		pool:  &pool.Pool{},
 		pttl:  maxTTL,
@@ -98,7 +98,6 @@ func (r *Redis) get(now time.Time, qname string, qtype uint16, do bool) *dns.Msg
 
 func (r *Redis) connect() {
 	// Can we ignore err here, i.e. will we try to connect later on?
-	p, _ := pool.New("tcp", r.addr, r.idle)
-	r.pool = p
+	r.pool, _ = pool.New("tcp", r.addr, r.idle)
 	return
 }

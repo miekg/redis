@@ -2,7 +2,9 @@ package redis
 
 import (
 	"fmt"
+	"net"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -80,10 +82,10 @@ func parse(c *caddy.Controller) (*Redis, error) {
 			switch c.Val() {
 			case Success:
 				args := c.RemainingArgs()
-				if len(args) != 1 {
+				if len(args) < 1 {
 					return nil, c.ArgErr()
 				}
-				pttl, err := strconv.Atoi(args[1])
+				pttl, err := strconv.Atoi(args[0])
 				if err != nil {
 					return nil, err
 				}
@@ -94,10 +96,10 @@ func parse(c *caddy.Controller) (*Redis, error) {
 				re.pttl = time.Duration(pttl) * time.Second
 			case Denial:
 				args := c.RemainingArgs()
-				if len(args) != 1 {
+				if len(args) < 1 {
 					return nil, c.ArgErr()
 				}
-				nttl, err := strconv.Atoi(args[1])
+				nttl, err := strconv.Atoi(args[0])
 				if err != nil {
 					return nil, err
 				}
@@ -107,7 +109,27 @@ func parse(c *caddy.Controller) (*Redis, error) {
 				}
 				re.nttl = time.Duration(nttl) * time.Second
 			case "endpoint":
-				println("not implemented")
+				args := c.RemainingArgs()
+				if len(args) < 1 {
+					return nil, c.ArgErr()
+				}
+				h, _, err := net.SplitHostPort(args[0])
+				if err != nil && strings.Contains(err.Error(), "missing port in address") {
+					if x := net.ParseIP(args[0]); x == nil {
+						return nil, fmt.Errorf("failed to parse IP: %s", args[0])
+					}
+
+					re.addr = net.JoinHostPort(args[0], "6379")
+					continue
+				}
+				if err != nil {
+					return nil, err
+				}
+				// h should be a valid IP
+				if x := net.ParseIP(h); x == nil {
+					return nil, fmt.Errorf("failed to parse IP: %s", h)
+				}
+				re.addr = args[0]
 
 			default:
 				return nil, c.ArgErr()

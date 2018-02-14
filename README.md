@@ -28,7 +28,8 @@ redis [TTL] [ZONES...]
 * **ZONES** zones it should cache for. If empty, the zones from the configuration block are used.
 
 Each element in the Redis cache is cached according to its TTL (with **TTL** as the max). For the negative
-cache, the SOA's MinTTL value is used.
+cache, the SOA's MinTTL value is used. As no endpoint is specfied the default of `127.0.0.1:6379` will
+be used.
 
 If you want more control:
 
@@ -41,7 +42,7 @@ redis [TTL] [ZONES...] {
 ~~~
 
 * **TTL**  and **ZONES** as above.
-* `endpoint` specifies which **ENDPOINT** to use for Redis, this default to `localhost:6379`.
+* `endpoint` specifies which **ENDPOINT** to use for Redis, this default to `127.0.0.1:6379`.
 * `success`, override the settings for caching successful responses. **TTL** overrides the cache maximum TTL.
 * `denial`, override the settings for caching denial of existence responses. **TTL** overrides the cache maximum TTL.
   There is a third category (`error`) but those responses are never cached.
@@ -60,7 +61,9 @@ Enable caching for all zones, cache locally and also cache for up to 40s in the 
 ~~~ corefile
 . {
     cache 30
-    redis 40
+    redis 40 {
+        endpoint 10.0.240.1:69
+    }
     whoami
 }
 ~~~

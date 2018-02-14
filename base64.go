@@ -6,8 +6,6 @@ import (
 	"github.com/miekg/dns"
 )
 
-// ignore errors for now.
-
 func ToString(m *dns.Msg) string {
 	b, _ := m.Pack()
 	return base64.RawStdEncoding.EncodeToString(b)
