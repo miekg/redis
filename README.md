@@ -68,7 +68,7 @@ Enable caching for all zones, cache locally and also cache for up to 40s in the 
 }
 ~~~
 
-Proxy to Google Public DNS and only cache responses for example.org (or below).
+Proxy to Google Public DNS and only cache responses for example.org (and below).
 
 ~~~ corefile
 . {
