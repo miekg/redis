@@ -80,3 +80,8 @@ Proxy to Google Public DNS and only cache responses for example.org (and below).
 # See Also
 
 See [the Redis site for more information](https://redis.io) on Redis.
+
+# Bugs
+
+This is still a work in progress. DNSSEC signed answers with expired signatures will be cached. And
+there is little or none unit testing.
