@@ -30,7 +30,7 @@ func (re *Redis) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 		return plugin.NextOrFailure(re.Name(), re.Next, ctx, crr, r)
 	}
 
-	m.Id = r.Id // Copy IDs so the client will accept this answer.
+	m.SetReply(r)
 	state.SizeAndDo(m)
 	m, _ = state.Scrub(m)
 	w.WriteMsg(m)
