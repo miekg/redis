@@ -82,3 +82,8 @@ Proxy to Google Public DNS and only cache responses for example.org (and below).
 See [the Redis site for more information](https://redis.io) on Redis. An external plugin called
 [redis](https://coredns.io/explugins/redis) already exists, hence this is named *redisc*, for
 "redis cache".
+
+# Bugs
+
+This is still a work in progress. DNSSEC signed answers with expired signatures will be cached. And
+there is little or none unit testing.
