@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	caddy.RegisterPlugin("redis", caddy.Plugin{
+	caddy.RegisterPlugin("redisc", caddy.Plugin{
 		ServerType: "dns",
 		Action:     setup,
 	})
@@ -25,7 +25,7 @@ func init() {
 func setup(c *caddy.Controller) error {
 	re, err := parse(c)
 	if err != nil {
-		return plugin.Error("redis", err)
+		return plugin.Error("redisc", err)
 	}
 	re.connect()
 
