@@ -85,5 +85,4 @@ See [the Redis site for more information](https://redis.io) on Redis. An externa
 
 # Bugs
 
-This is still a work in progress. DNSSEC signed answers with expired signatures will be cached. And
-there is little or none unit testing.
+There is little unit testing.
