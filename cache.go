@@ -132,8 +132,9 @@ func (w *ResponseWriter) Write(buf []byte) (int, error) {
 }
 
 const (
-	maxTTL  = 1 * time.Hour
-	maxNTTL = 30 * time.Minute
+	maxTTL      = 1 * time.Hour
+	maxNTTL     = 30 * time.Minute
+	failSafeTTL = 5 * time.Second
 
 	// Success is the class for caching positive caching.
 	Success = "success"
