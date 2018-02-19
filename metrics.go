@@ -20,4 +20,11 @@ var (
 		Name:      "misses_total",
 		Help:      "The count of cache misses.",
 	})
+
+	redisErr = prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: plugin.Namespace,
+		Subsystem: "redis",
+		Name:      "set_errors_total",
+		Help:      "The count of errors when adding entries to redis.",
+	})
 )

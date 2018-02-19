@@ -53,6 +53,8 @@ If monitoring is enabled (via the *prometheus* directive) then the following met
 
 * `coredns_redisc_hits_total{}` - Counter of cache hits.
 * `coredns_redisc_misses_total{}` - Counter of cache misses.
+* `coredns_redisc_set_errors_total{}` - Counter of errors when connecting to Redis.
+
 
 ## Examples
 
