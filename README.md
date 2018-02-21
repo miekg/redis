@@ -16,6 +16,9 @@ If multiple CoreDNS instances get a cache miss for the same item, they will all 
 information from an upstream and updating the cache, i.e. there is no (extra) coordination between
 those instances.
 
+If Redis is not available CoreDNS will simply not cache anything if metrics are enabled this will be
+visible in the `set_errors_total` metric.
+
 ## Syntax
 
 ~~~ txt
@@ -28,7 +31,7 @@ redisc [TTL] [ZONES...]
 * **ZONES** zones it should cache for. If empty, the zones from the configuration block are used.
 
 Each element in the Redis cache is cached according to its TTL (with **TTL** as the max). For the negative
-cache, the SOA's MinTTL value is used. As no endpoint is specfied the default of `127.0.0.1:6379` will
+cache, the SOA's MinTTL value is used. When no endpoint is specfied the default of `127.0.0.1:6379` will
 be used.
 
 If you want more control:
