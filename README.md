@@ -79,12 +79,6 @@ Proxy to Google Public DNS and only cache responses for example.org (and below).
 }
 ~~~
 
-## Enabling in CoreDNS
-
-Edit `plugin.cfg` and add: `redisc:github.com/miekg/redis` just after `cache:cache`. Then `go
-generate` and `go build`.
-
-
 ## See Also
 
 See [the Redis site for more information](https://redis.io) on Redis. An external plugin called
