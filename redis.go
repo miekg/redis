@@ -27,6 +27,7 @@ type Redis struct {
 	now func() time.Time
 }
 
+// New returns an new initialized Redis.
 func New() *Redis {
 	return &Redis{
 		Zones: []string{"."},
@@ -39,6 +40,7 @@ func New() *Redis {
 	}
 }
 
+// Add adds the message m under k in Redis.
 func Add(p *pool.Pool, key int, m *dns.Msg, duration time.Duration) error {
 	// SETEX key duration m
 	conn, err := p.Get()
@@ -52,6 +54,7 @@ func Add(p *pool.Pool, key int, m *dns.Msg, duration time.Duration) error {
 	return resp.Err
 }
 
+// Get returns the message under key from Redis.
 func Get(p *pool.Pool, key int) (*dns.Msg, error) {
 	// GET key
 	conn, err := p.Get()

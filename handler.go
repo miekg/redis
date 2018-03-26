@@ -26,7 +26,7 @@ func (re *Redis) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 	m := re.get(now, qname, qtype, do)
 
 	if m == nil {
-		crr := &ResponseWriter{ResponseWriter: w, Redis: re}
+		crr := &ResponseWriter{ResponseWriter: w, Redis: re, state: state}
 		return plugin.NextOrFailure(re.Name(), re.Next, ctx, crr, r)
 	}
 
@@ -39,4 +39,4 @@ func (re *Redis) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 }
 
 // Name implements the Handler interface.
-func (c *Redis) Name() string { return "redis" }
+func (re *Redis) Name() string { return "redisc" }

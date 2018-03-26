@@ -39,16 +39,11 @@ If you want more control:
 ~~~ txt
 redisc [TTL] [ZONES...] {
     endpoint ENDPOINT
-    success TTL
-    denial TTL
 }
 ~~~
 
 * **TTL**  and **ZONES** as above.
 * `endpoint` specifies which **ENDPOINT** to use for Redis, this default to `127.0.0.1:6379`.
-* `success`, override the settings for caching successful responses. **TTL** overrides the cache maximum TTL.
-* `denial`, override the settings for caching denial of existence responses. **TTL** overrides the cache maximum TTL.
-  There is a third category (`error`) but those responses are never cached.
 
 ## Metrics
 
@@ -57,7 +52,7 @@ If monitoring is enabled (via the *prometheus* directive) then the following met
 * `coredns_redisc_hits_total{}` - Counter of cache hits.
 * `coredns_redisc_misses_total{}` - Counter of cache misses.
 * `coredns_redisc_set_errors_total{}` - Counter of errors when connecting to Redis.
-
+* `coredns_redisc_drops_total{}` - Counter of dropped messages.
 
 ## Examples
 

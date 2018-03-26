@@ -43,6 +43,8 @@ func setup(c *caddy.Controller) error {
 			if x, ok := m.(*metrics.Metrics); ok {
 				x.MustRegister(cacheHits)
 				x.MustRegister(cacheMisses)
+				x.MustRegister(cacheDrops)
+				x.MustRegister(redisErr)
 			}
 		})
 		return nil

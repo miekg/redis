@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/coredns/coredns/plugin/pkg/response"
+	"github.com/coredns/coredns/request"
 
 	"github.com/miekg/dns"
 )
@@ -58,6 +59,7 @@ func hash(qname string, qtype uint16, do bool) int {
 // ResponseWriter is a response writer that caches the reply message in Redis.
 type ResponseWriter struct {
 	dns.ResponseWriter
+	state request.Request
 	*Redis
 }
 
@@ -83,7 +85,13 @@ func (w *ResponseWriter) WriteMsg(res *dns.Msg) error {
 	}
 
 	if key != -1 && duration > 0 {
-		w.set(res, key, mt, duration)
+
+		if w.state.Match(res) {
+			w.set(res, key, mt, duration)
+		} else {
+			// Don't log it, but increment counter
+			cacheDrops.Inc()
+		}
 	}
 
 	// Apply capped TTL to this reply to avoid jarring TTL experience 1799 -> 8 (e.g.)
