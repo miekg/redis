@@ -36,16 +36,7 @@ func setup(c *caddy.Controller) error {
 
 	c.OnStartup(func() error {
 		once.Do(func() {
-			m := dnsserver.GetConfig(c).Handler("prometheus")
-			if m == nil {
-				return
-			}
-			if x, ok := m.(*metrics.Metrics); ok {
-				x.MustRegister(cacheHits)
-				x.MustRegister(cacheMisses)
-				x.MustRegister(cacheDrops)
-				x.MustRegister(redisErr)
-			}
+			metrics.MustRegister(c, cacheHits, cacheMisses, cacheDrops, redisErr)
 		})
 		return nil
 	})
