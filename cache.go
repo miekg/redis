@@ -3,9 +3,9 @@ package redis
 import (
 	"encoding/binary"
 	"hash/fnv"
-	"log"
 	"time"
 
+	"github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/plugin/pkg/response"
 	"github.com/coredns/coredns/request"
 
@@ -127,13 +127,13 @@ func (w *ResponseWriter) set(m *dns.Msg, key int, mt response.Type, duration tim
 	case response.OtherError:
 		// don't cache these
 	default:
-		log.Printf("[WARNING] Redis called with unknown typification: %d", mt)
+		log.Warningf("Redis called with unknown typification: %d", mt)
 	}
 }
 
 // Write implements the dns.ResponseWriter interface.
 func (w *ResponseWriter) Write(buf []byte) (int, error) {
-	log.Printf("[WARNING] Redis called with Write: not caching reply")
+	log.Warningf("Redis called with Write: not caching reply")
 	n, err := w.ResponseWriter.Write(buf)
 	return n, err
 }
