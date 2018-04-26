@@ -54,7 +54,7 @@ If monitoring is enabled (via the *prometheus* directive) then the following met
 * `coredns_redisc_set_errors_total{server}` - Counter of errors when connecting to Redis.
 * `coredns_redisc_drops_total{server}` - Counter of dropped messages.
 
-The `server` label indicated which server handled the request, see the *metrics* plugin for details.
+The `server` label indicates which server handled the request, see the *metrics* plugin for details.
 
 ## Examples
 
