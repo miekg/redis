@@ -61,6 +61,7 @@ type ResponseWriter struct {
 	dns.ResponseWriter
 	state request.Request
 	*Redis
+	server string
 }
 
 // WriteMsg implements the dns.ResponseWriter interface.
@@ -90,7 +91,7 @@ func (w *ResponseWriter) WriteMsg(res *dns.Msg) error {
 			w.set(res, key, mt, duration)
 		} else {
 			// Don't log it, but increment counter
-			cacheDrops.Inc()
+			cacheDrops.WithLabelValues(w.server).Inc()
 		}
 	}
 
@@ -121,7 +122,7 @@ func (w *ResponseWriter) set(m *dns.Msg, key int, mt response.Type, duration tim
 
 	case response.NameError, response.NoData:
 		if err := Add(w.pool, key, m, duration); err != nil {
-			redisErr.Inc()
+			redisErr.WithLabelValues(w.server).Inc()
 		}
 
 	case response.OtherError:

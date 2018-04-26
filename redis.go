@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/coredns/coredns/plugin"
+	"github.com/coredns/coredns/request"
 
 	"github.com/mediocregopher/radix.v2/pool"
 	"github.com/miekg/dns"
@@ -56,7 +57,6 @@ func Add(p *pool.Pool, key int, m *dns.Msg, duration time.Duration) error {
 
 // Get returns the message under key from Redis.
 func Get(p *pool.Pool, key int) (*dns.Msg, error) {
-	// GET key
 	conn, err := p.Get()
 	if err != nil {
 		return nil, err
@@ -87,15 +87,15 @@ func Get(p *pool.Pool, key int) (*dns.Msg, error) {
 	return m, nil
 }
 
-func (r *Redis) get(now time.Time, qname string, qtype uint16, do bool) *dns.Msg {
-	k := hash(qname, qtype, do)
+func (r *Redis) get(now time.Time, state request.Request, server string) *dns.Msg {
+	k := hash(state.Name(), state.QType(), state.Do())
 
 	m, err := Get(r.pool, k)
 	if err != nil {
-		cacheMisses.Inc()
+		cacheMisses.WithLabelValues(server).Inc()
 		return nil
 	}
-	cacheHits.Inc()
+	cacheHits.WithLabelValues(server).Inc()
 	return m
 }
 

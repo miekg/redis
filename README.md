@@ -49,10 +49,12 @@ redisc [TTL] [ZONES...] {
 
 If monitoring is enabled (via the *prometheus* directive) then the following metrics are exported:
 
-* `coredns_redisc_hits_total{}` - Counter of cache hits.
-* `coredns_redisc_misses_total{}` - Counter of cache misses.
-* `coredns_redisc_set_errors_total{}` - Counter of errors when connecting to Redis.
-* `coredns_redisc_drops_total{}` - Counter of dropped messages.
+* `coredns_redisc_hits_total{server}` - Counter of cache hits.
+* `coredns_redisc_misses_total{server}` - Counter of cache misses.
+* `coredns_redisc_set_errors_total{server}` - Counter of errors when connecting to Redis.
+* `coredns_redisc_drops_total{server}` - Counter of dropped messages.
+
+The `server` label indicated which server handled the request, see the *metrics* plugin for details.
 
 ## Examples
 

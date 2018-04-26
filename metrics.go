@@ -7,31 +7,31 @@ import (
 )
 
 var (
-	cacheHits = prometheus.NewCounter(prometheus.CounterOpts{
+	cacheHits = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "hits_total",
 		Help:      "The count of cache hits.",
-	})
+	}, []string{"server"})
 
-	cacheMisses = prometheus.NewCounter(prometheus.CounterOpts{
+	cacheMisses = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "misses_total",
 		Help:      "The count of cache misses.",
-	})
+	}, []string{"server"})
 
-	cacheDrops = prometheus.NewCounter(prometheus.CounterOpts{
+	cacheDrops = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "drops_total",
 		Help:      "The number responses that are not cached, because the reply is malformed.",
-	})
+	}, []string{"server"})
 
-	redisErr = prometheus.NewCounter(prometheus.CounterOpts{
+	redisErr = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "set_errors_total",
 		Help:      "The count of errors when adding entries to redis.",
-	})
+	}, []string{"server"})
 )

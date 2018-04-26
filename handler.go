@@ -2,6 +2,7 @@ package redis
 
 import (
 	"github.com/coredns/coredns/plugin"
+	"github.com/coredns/coredns/plugin/metrics"
 	"github.com/coredns/coredns/request"
 
 	"github.com/miekg/dns"
@@ -12,21 +13,17 @@ import (
 func (re *Redis) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
-	qname := state.Name()
-	qtype := state.QType()
-	zone := plugin.Zones(re.Zones).Matches(qname)
+	zone := plugin.Zones(re.Zones).Matches(state.Name())
 	if zone == "" {
 		return plugin.NextOrFailure(re.Name(), re.Next, ctx, w, r)
 	}
 
-	do := state.Do()
-
+	server := metrics.WithServer(ctx)
 	now := re.now().UTC()
 
-	m := re.get(now, qname, qtype, do)
-
+	m := re.get(now, state, server)
 	if m == nil {
-		crr := &ResponseWriter{ResponseWriter: w, Redis: re, state: state}
+		crr := &ResponseWriter{ResponseWriter: w, Redis: re, state: state, server: metrics.WithServer(ctx)}
 		return plugin.NextOrFailure(re.Name(), re.Next, ctx, crr, r)
 	}
 
