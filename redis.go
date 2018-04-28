@@ -96,6 +96,7 @@ func (r *Redis) get(now time.Time, state request.Request, server string) *dns.Ms
 		cacheMisses.WithLabelValues(server).Inc()
 		return nil
 	}
+	log.Debugf("Returning response from Redis cache: %s for %s", m.Question[0].Name, state.Name())
 	cacheHits.WithLabelValues(server).Inc()
 	return m
 }
