@@ -11,9 +11,12 @@ import (
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/metrics"
+	clog "github.com/coredns/coredns/plugin/pkg/log"
 
 	"github.com/mholt/caddy"
 )
+
+var log = clog.NewWithPlugin("redisc")
 
 func init() {
 	caddy.RegisterPlugin("redisc", caddy.Plugin{
@@ -27,7 +30,11 @@ func setup(c *caddy.Controller) error {
 	if err != nil {
 		return plugin.Error("redisc", err)
 	}
-	re.connect()
+	if err := re.connect(); err != nil {
+		log.Warningf("Failed to connect to Redis at %s: %s", re.addr, err)
+	} else {
+		log.Infof("Connected to Redis at %s", re.addr)
+	}
 
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
 		re.Next = next

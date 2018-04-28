@@ -99,8 +99,7 @@ func (r *Redis) get(now time.Time, state request.Request, server string) *dns.Ms
 	return m
 }
 
-func (r *Redis) connect() {
-	// Can we ignore err here, i.e. will we try to connect later on?
-	r.pool, _ = pool.New("tcp", r.addr, r.idle)
-	return
+func (r *Redis) connect() (err error) {
+	r.pool, err = pool.New("tcp", r.addr, r.idle)
+	return err
 }

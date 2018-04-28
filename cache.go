@@ -5,7 +5,6 @@ import (
 	"hash/fnv"
 	"time"
 
-	"github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/plugin/pkg/response"
 	"github.com/coredns/coredns/request"
 
