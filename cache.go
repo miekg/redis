@@ -121,6 +121,8 @@ func (w *ResponseWriter) set(m *dns.Msg, key int, mt response.Type, duration tim
 
 	case response.NameError, response.NoData:
 		if err := Add(w.pool, key, m, duration); err != nil {
+			log.Debugf("Failed to add response to Redis cache: %s", err)
+
 			redisErr.WithLabelValues(w.server).Inc()
 		}
 

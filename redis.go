@@ -92,6 +92,7 @@ func (r *Redis) get(now time.Time, state request.Request, server string) *dns.Ms
 
 	m, err := Get(r.pool, k)
 	if err != nil {
+		log.Debugf("Failed to get response from Redis cache: %s", err)
 		cacheMisses.WithLabelValues(server).Inc()
 		return nil
 	}
