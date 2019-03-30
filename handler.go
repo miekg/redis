@@ -29,8 +29,6 @@ func (re *Redis) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 	}
 
 	m.SetReply(r)
-	state.SizeAndDo(m)
-	m, _ = state.Scrub(m)
 	w.WriteMsg(m)
 
 	return dns.RcodeSuccess, nil

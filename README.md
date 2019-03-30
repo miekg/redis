@@ -6,11 +6,11 @@
 
 ## Description
 
-With *redisc* responses can be cached for up to 3600s. Caching in Redis is mostly usefull in
+With *redisc* responses can be cached for up to 3600s. Caching in Redis is mostly useful in
 a setup where multiple CoreDNS instances share a VIP. E.g. multiple CoreDNS pods in a Kubernetes
 cluster.
 
-If Redis is not reacheable this plugin will be a noop. The *cache* and *redisc* plugin can be used
+If Redis is not reachable this plugin will be a noop. The *cache* and *redisc* plugin can be used
 together, where *cache* is the L1 and *redisc* is the L2 level cache.
 If multiple CoreDNS instances get a cache miss for the same item, they will all be fetching the same
 information from an upstream and updating the cache, i.e. there is no (extra) coordination between
@@ -31,7 +31,7 @@ redisc [TTL] [ZONES...]
 * **ZONES** zones it should cache for. If empty, the zones from the configuration block are used.
 
 Each element in the Redis cache is cached according to its TTL (with **TTL** as the max). For the negative
-cache, the SOA's MinTTL value is used. When no endpoint is specfied the default of `127.0.0.1:6379` will
+cache, the SOA's MinTTL value is used. When no endpoint is specified the default of `127.0.0.1:6379` will
 be used.
 
 If you want more control:
