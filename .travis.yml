@@ -1,9 +1,7 @@
 language: go
 sudo: false
 go:
-  - "1.9.x"
-  - "1.10"
-  - "tip"
+  - "1.12.x"
 
 env:
   - TESTS="-race -v -bench=. -coverprofile=coverage.txt -covermode=atomic"
@@ -12,7 +10,6 @@ env:
 before_install:
     - sudo apt-get -qq update
     - sudo apt-get install -y redis-server
-    - go get github.com/coredns/coredns
 
 script:
   - go test $TESTS
