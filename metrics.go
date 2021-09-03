@@ -4,31 +4,32 @@ import (
 	"github.com/coredns/coredns/plugin"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 var (
-	cacheHits = prometheus.NewCounterVec(prometheus.CounterOpts{
+	cacheHits = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "hits_total",
 		Help:      "The count of cache hits.",
 	}, []string{"server"})
 
-	cacheMisses = prometheus.NewCounterVec(prometheus.CounterOpts{
+	cacheMisses = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "misses_total",
 		Help:      "The count of cache misses.",
 	}, []string{"server"})
 
-	cacheDrops = prometheus.NewCounterVec(prometheus.CounterOpts{
+	cacheDrops = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "drops_total",
 		Help:      "The number responses that are not cached, because the reply is malformed.",
 	}, []string{"server"})
 
-	redisErr = prometheus.NewCounterVec(prometheus.CounterOpts{
+	redisErr = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "redisc",
 		Name:      "set_errors_total",
