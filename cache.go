@@ -23,7 +23,7 @@ func key(m *dns.Msg, t response.Type, do bool) int {
 		return -1
 	}
 
-	return int(hash(m.Question[0].Name, m.Question[0].Qtype, do))
+	return hash(m.Question[0].Name, m.Question[0].Qtype, do)
 }
 
 var (

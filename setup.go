@@ -5,7 +5,6 @@ import (
 	"net"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/coredns/coredns/core/dnsserver"
@@ -124,7 +123,7 @@ func parse(c *caddy.Controller) (*Redis, error) {
 		}
 
 		for i := range origins {
-			origins[i] = plugin.Host(origins[i]).Normalize()
+			origins[i] = plugin.Host(origins[i]).NormalizeExact()[0]
 		}
 		re.Zones = origins
 
@@ -133,5 +132,3 @@ func parse(c *caddy.Controller) (*Redis, error) {
 
 	return nil, nil
 }
-
-var once sync.Once
