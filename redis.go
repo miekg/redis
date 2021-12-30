@@ -87,10 +87,10 @@ func Get(p *pool.Pool, key int) (*dns.Msg, error) {
 	return m, nil
 }
 
-func (r *Redis) get(now time.Time, state request.Request, server string) *dns.Msg {
+func (re *Redis) get(now time.Time, state request.Request, server string) *dns.Msg {
 	k := hash(state.Name(), state.QType(), state.Do())
 
-	m, err := Get(r.pool, k)
+	m, err := Get(re.pool, k)
 	if err != nil {
 		log.Debugf("Failed to get response from Redis cache: %s", err)
 		cacheMisses.WithLabelValues(server).Inc()
@@ -101,7 +101,7 @@ func (r *Redis) get(now time.Time, state request.Request, server string) *dns.Ms
 	return m
 }
 
-func (r *Redis) connect() (err error) {
-	r.pool, err = pool.New("tcp", r.addr, r.idle)
+func (re *Redis) connect() (err error) {
+	re.pool, err = pool.New("tcp", re.addr, re.idle)
 	return err
 }
