@@ -99,7 +99,7 @@ func parse(c *caddy.Controller) (*Redis, error) {
 				if len(args) < 1 {
 					return nil, c.ArgErr()
 				}
-				h, _, err := net.SplitHostPort(args[0])
+				_, _, err := net.SplitHostPort(args[0])
 				if err != nil && strings.Contains(err.Error(), "missing port in address") {
 					re.addr = net.JoinHostPort(args[0], "6379")
 					continue
