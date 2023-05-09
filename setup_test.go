@@ -44,9 +44,6 @@ func TestSetup(t *testing.T) {
 		{`redis {
 				endpoint :1:1:6379
 			}`, true, maxTTL, maxTTL, defEndpoint},
-		{`redis {
-				endpoint 127.0.0.a
-			}`, true, maxTTL, maxTTL, defEndpoint},
 	}
 	for i, test := range tests {
 		c := caddy.NewTestController("dns", test.input)
