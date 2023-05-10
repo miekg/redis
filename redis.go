@@ -1,14 +1,18 @@
 package redis
 
 import (
+	"crypto/tls"
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 
+	"github.com/mediocregopher/radix.v2"
 	"github.com/mediocregopher/radix.v2/pool"
+	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/miekg/dns"
 )
 
@@ -102,6 +106,20 @@ func (re *Redis) get(now time.Time, state request.Request, server string) *dns.M
 }
 
 func (re *Redis) connect() (err error) {
-	re.pool, err = pool.New("tcp", re.addr, re.idle)
+	if strings.HasPrefix(re.addr, "tls://") {
+		re.pool, err = pool.NewCustom("tcp", re.addr, re.idle, dialTLS)
+	} else {
+		re.pool, err = pool.New("tcp", re.addr, re.idle)
+	}
+
 	return err
+}
+
+func dialTLS(network, addr string) (*redis.Client, error) {
+	conn, err := tls.Dial(network, addr, &tls.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	return radix.NewClient(conn)
 }

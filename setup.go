@@ -3,6 +3,7 @@ package redis
 import (
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -27,6 +28,19 @@ func setup(c *caddy.Controller) error {
 		log.Warningf("Failed to connect to Redis at %s: %s", re.addr, err)
 	} else {
 		log.Infof("Connected to Redis at %s", re.addr)
+	}
+
+	password := os.Getenv("REDIS_PASSWORD")  // TODO: do this right, from the Corefile
+	if password != "" {
+		redis_client, err := re.pool.Get()
+		if err != nil {
+			log.Warningf("Failed to obtain Redis client for %s: %s", re.addr, err)
+		}
+		response := redis_client.Cmd("AUTH", password)
+		if err := response.Err; err != nil {
+			log.Warningf("Failed to authenticate to Redis at %s: %s", re.addr, err)
+		}
+		// TODO: verify it authed lol
 	}
 
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
