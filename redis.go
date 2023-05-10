@@ -10,7 +10,6 @@ import (
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 
-	"github.com/mediocregopher/radix.v2"
 	"github.com/mediocregopher/radix.v2/pool"
 	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/miekg/dns"
@@ -121,5 +120,5 @@ func dialTLS(network, addr string) (*redis.Client, error) {
 		return nil, err
 	}
 
-	return radix.NewClient(conn)
+	return redis.NewClient(conn)
 }
