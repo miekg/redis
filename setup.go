@@ -2,9 +2,7 @@ package redis
 
 import (
 	"fmt"
-	"net"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/coredns/coredns/core/dnsserver"
@@ -99,24 +97,7 @@ func parse(c *caddy.Controller) (*Redis, error) {
 				if len(args) < 1 {
 					return nil, c.ArgErr()
 				}
-				h, _, err := net.SplitHostPort(args[0])
-				if err != nil && strings.Contains(err.Error(), "missing port in address") {
-					if x := net.ParseIP(args[0]); x == nil {
-						return nil, fmt.Errorf("failed to parse IP: %s", args[0])
-					}
-
-					re.addr = net.JoinHostPort(args[0], "6379")
-					continue
-				}
-				if err != nil {
-					return nil, err
-				}
-				// h should be a valid IP
-				if x := net.ParseIP(h); x == nil {
-					return nil, fmt.Errorf("failed to parse IP: %s", h)
-				}
 				re.addr = args[0]
-
 			default:
 				return nil, c.ArgErr()
 			}

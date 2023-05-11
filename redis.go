@@ -1,14 +1,19 @@
 package redis
 
 import (
+	"crypto/tls"
 	"errors"
+	"net"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 
 	"github.com/mediocregopher/radix.v2/pool"
+	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/miekg/dns"
 )
 
@@ -102,6 +107,42 @@ func (re *Redis) get(now time.Time, state request.Request, server string) *dns.M
 }
 
 func (re *Redis) connect() (err error) {
-	re.pool, err = pool.New("tcp", re.addr, re.idle)
+	if strings.HasPrefix(re.addr, "tls://") {
+		re.addr = strings.Split(re.addr, "://")[1]
+		if _, _, err := net.SplitHostPort(re.addr); err != nil {
+			if strings.Contains(err.Error(), "missing port in address") {
+				re.addr = net.JoinHostPort(re.addr, "6379")
+			} else {
+				return err
+			}
+		}
+
+		re.pool, err = pool.NewCustom("tcp", re.addr, re.idle, func(network, addr string) (*redis.Client, error) {
+			conn, err := tls.Dial(network, addr, &tls.Config{})
+			if err != nil {
+				log.Debugf("Failed to tls.Dial Redis at %s: %s", addr, err)
+				return nil, err
+			}
+
+			client, err := redis.NewClient(conn)
+			if err != nil {
+				log.Debugf("Failed to instantiate new Redis client for %s: %s", addr, err)
+				return nil, err
+			}
+
+			if password := os.Getenv("REDIS_PASSWORD"); password != "" {
+				if err := client.Cmd("AUTH", password).Err; err != nil {
+					client.Close()
+					log.Debugf("Failed to authenticate with Redis for %s: %s", addr, err)
+					return nil, err
+				}
+			}
+
+			return client, nil
+		})
+	} else {
+		re.pool, err = pool.New("tcp", re.addr, re.idle)
+	}
+
 	return err
 }
