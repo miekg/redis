@@ -2,10 +2,7 @@ package redis
 
 import (
 	"fmt"
-	"net"
-	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/coredns/coredns/core/dnsserver"
@@ -28,19 +25,6 @@ func setup(c *caddy.Controller) error {
 		log.Warningf("Failed to connect to Redis at %s: %s", re.addr, err)
 	} else {
 		log.Infof("Connected to Redis at %s", re.addr)
-	}
-
-	password := os.Getenv("REDIS_PASSWORD")  // TODO: do this right, from the Corefile
-	if password != "" {
-		redis_client, err := re.pool.Get()
-		if err != nil {
-			log.Warningf("Failed to obtain Redis client for %s: %s", re.addr, err)
-		}
-		response := redis_client.Cmd("AUTH", password)
-		if err := response.Err; err != nil {
-			log.Warningf("Failed to authenticate to Redis at %s: %s", re.addr, err)
-		}
-		// TODO: verify it authed lol
 	}
 
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
@@ -113,16 +97,7 @@ func parse(c *caddy.Controller) (*Redis, error) {
 				if len(args) < 1 {
 					return nil, c.ArgErr()
 				}
-				_, _, err := net.SplitHostPort(args[0])
-				if err != nil && strings.Contains(err.Error(), "missing port in address") {
-					re.addr = net.JoinHostPort(args[0], "6379")
-					continue
-				}
-				if err != nil {
-					return nil, err
-				}
 				re.addr = args[0]
-
 			default:
 				return nil, c.ArgErr()
 			}
